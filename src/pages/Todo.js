@@ -6,7 +6,8 @@ const Todo = () => {
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [newTodo, setNewTodo] = useState("");
-  const [isOn, setIsOn] = useState([]);
+  const [isOn, setIsOn] = useState("");
+  const [updateTodo, setUpdateTodo] = useState("");
   const handleCheck = useCallback(async (id, isCompleted) => {
     try {
       const url = isCompleted
@@ -45,7 +46,9 @@ const Todo = () => {
     }
   });
   const handleNewTodo = useCallback(
-    (e) => setNewTodo(e.target.value),
+    (e) => {
+      setNewTodo(e.target.value);
+    },
     [setNewTodo]
   );
   const handleNewTodoEnter = useCallback(
@@ -55,11 +58,11 @@ const Todo = () => {
           setTodos((prev) => [{ title: newTodo }, ...prev]);
           setNewTodo("");
           (async () => {
-            const request = await axiosInstance.post("/todo", {
+            const response = await axiosInstance.post("/todo", {
               title: newTodo,
               isCompleted: false,
             });
-            console.log(request.data);
+            console.log(response.data);
           })();
         } catch (e) {
           console.log(e);
@@ -68,8 +71,40 @@ const Todo = () => {
     },
     [newTodo]
   );
-  const handleUpdate = useCallback(async (id) => {});
-
+  const handleUpdate = useCallback(
+    (e) => {
+      console.log(updateTodo);
+      if (e.keyCode === 13) {
+        try {
+          (async () => {
+            const response = await axiosInstance.put(`/todo/${isOn}`, {
+              title: updateTodo,
+              isCompleted: false,
+            });
+            console.log(response.data);
+          })();
+        } catch (error) {
+          console.log("error:" + error);
+        }
+        setIsOn("");
+        setUpdateTodo("");
+      }
+    },
+    [updateTodo]
+  );
+  const handleTodoUpdate = useCallback(
+    (e) => {
+      console.log(e.target.value);
+      setUpdateTodo(e.target.value);
+    },
+    [setUpdateTodo]
+  );
+  const handleInputId = useCallback(
+    (id) => {
+      setIsOn(id);
+    },
+    [setIsOn]
+  );
   const patch = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -91,7 +126,6 @@ const Todo = () => {
       await patch();
     })();
   }, []);
-
   return (
     <>
       <h1>Todo</h1>
@@ -103,12 +137,22 @@ const Todo = () => {
               onChange={() => handleCheck(todo._id, todo.isCompleted)}
               checked={todo.isCompleted}
             />
-            {isOn[index] ? (
-              <span onClick={() => setIsOn(false)}>{todo.title}</span>
+            {isOn !== todo._id ? (
+              <span
+                onClick={() => {
+                  handleInputId(todo._id);
+                }}
+              >
+                {todo.title}
+              </span>
             ) : (
-              <input type="text" value={todo.title} />
+              <input
+                type="text"
+                onChange={handleTodoUpdate}
+                onKeyDown={handleUpdate}
+                defaultValue={updateTodo}
+              ></input>
             )}
-
             <button type="button" onClick={() => handleDelete(todo._id)}>
               X
             </button>
