@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import axiosInstance from "../apis/axiosInstance";
+import Modal from "react-modal";
 
 const Todo = () => {
   const [todos, setTodos] = useState([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [newTodo, setNewTodo] = useState("");
-  const [isOn, setIsOn] = useState("");
+  const [idState, setIdState] = useState("");
   const [updateTodo, setUpdateTodo] = useState("");
+  const [modalId, setModalId] = useState("");
   const handleCheck = useCallback(async (id, isCompleted) => {
     try {
       const url = isCompleted
@@ -53,15 +55,17 @@ const Todo = () => {
   );
   const handleNewTodoEnter = useCallback(
     (e) => {
+      console.log(newTodo);
+      const formData = new FormData();
+      formData.append("title", newTodo);
+      formData.append("isCompleted", false);
+
       if (e.keyCode === 13) {
         try {
           setTodos((prev) => [{ title: newTodo }, ...prev]);
           setNewTodo("");
           (async () => {
-            const response = await axiosInstance.post("/todo", {
-              title: newTodo,
-              isCompleted: false,
-            });
+            const response = await axiosInstance.post("/todo", formData);
             console.log(response.data);
           })();
         } catch (e) {
@@ -74,23 +78,34 @@ const Todo = () => {
   const handleUpdate = useCallback(
     (e) => {
       console.log(updateTodo);
+      const formData = new FormData();
+      formData.append("title", updateTodo);
+      formData.append("isCompleted", false);
       if (e.keyCode === 13) {
+        setTodos((prev) => {
+          return prev.map((todo) =>
+            todo._id === idState ? { ...todo, title: updateTodo } : todo
+          );
+        });
         try {
           (async () => {
-            const response = await axiosInstance.put(`/todo/${isOn}`, {
-              title: updateTodo,
-              isCompleted: false,
-            });
+            const response = await axiosInstance.put(
+              `/todo/${idState}`,
+              formData
+            );
             console.log(response.data);
           })();
         } catch (error) {
           console.log("error:" + error);
         }
-        setIsOn("");
+        setIdState("");
         setUpdateTodo("");
       }
+      if (e.keyCode === 27) {
+        setIdState("");
+      }
     },
-    [updateTodo]
+    [idState, updateTodo]
   );
   const handleTodoUpdate = useCallback(
     (e) => {
@@ -101,9 +116,9 @@ const Todo = () => {
   );
   const handleInputId = useCallback(
     (id) => {
-      setIsOn(id);
+      setIdState(id);
     },
-    [setIsOn]
+    [setIdState]
   );
   const patch = useCallback(async () => {
     try {
@@ -137,14 +152,19 @@ const Todo = () => {
               onChange={() => handleCheck(todo._id, todo.isCompleted)}
               checked={todo.isCompleted}
             />
-            {isOn !== todo._id ? (
-              <span
-                onClick={() => {
-                  handleInputId(todo._id);
-                }}
-              >
-                {todo.title}
-              </span>
+            {idState !== todo._id ? (
+              <>
+                <span
+                  onClick={() => {
+                    handleInputId(todo._id);
+                  }}
+                >
+                  {todo.title}
+                </span>
+                <button type="button" onClick={() => setModalId(todo._id)}>
+                  상세보기
+                </button>
+              </>
             ) : (
               <input
                 type="text"
@@ -156,6 +176,21 @@ const Todo = () => {
             <button type="button" onClick={() => handleDelete(todo._id)}>
               X
             </button>
+
+            <Modal isOpen={modalId !== todo._id ? false : true}>
+              <div>id: {todo._id}</div>
+              <div>제목 : {todo.title}</div>
+              <div>작성자(닉네임) : {todo.createdUser.username}</div>
+              <div>작성일시 : {todo.createdDate}</div>
+              <div>수정자(닉네임) : {todo.updatedUser.username}</div>
+              <div>수정일시 : {todo.updatedDate}</div>
+              <div>
+                완료여부 : {todo.isCompleted === false ? "미완료" : "완료"}
+              </div>
+              <button type="button" onClick={() => setModalId("")}>
+                x
+              </button>
+            </Modal>
           </div>
         );
       })}
