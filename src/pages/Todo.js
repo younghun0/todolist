@@ -33,7 +33,6 @@ const Todo = () => {
       console.log(error);
     }
   }, []);
-
   const handleDelete = useCallback(async (id) => {
     try {
       const response = await axiosInstance.delete(`/todo/${id}`);
@@ -186,7 +185,23 @@ const Todo = () => {
               <div>수정일시 : {todo.updatedDate}</div>
               <div>
                 완료여부 : {todo.isCompleted === false ? "미완료" : "완료"}
+                {todo.isCompleted === false ? (
+                  <button
+                    type="button"
+                    onClick={() => handleCheck(todo._id, todo.isCompleted)}
+                  >
+                    완료
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleCheck(todo._id, todo.isCompleted)}
+                  >
+                    미완료
+                  </button>
+                )}
               </div>
+
               <button type="button" onClick={() => setModalId("")}>
                 x
               </button>
