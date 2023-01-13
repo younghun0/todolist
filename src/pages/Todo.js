@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import axiosInstance from "../apis/axiosInstance";
 import Modal from "react-modal";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 const Todo = () => {
+  const navigate = useNavigate();
   const [todos, setTodos] = useState([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,7 +51,7 @@ const Todo = () => {
     } catch (error) {
       console.log(error);
     }
-  });
+  }, []);
 
   //추가 input 핸들러
   const handleNewTodo = useCallback(
@@ -121,13 +122,15 @@ const Todo = () => {
     [idState, updateTodo]
   );
 
-  //
+  //todo 수정 input 핸들러
   const handleTodoUpdate = useCallback(
     (e) => {
       setUpdateTodo(e.target.value);
     },
     [setUpdateTodo]
   );
+
+  //
   const handleInputId = useCallback(
     (id) => {
       setIdState(id);
@@ -176,7 +179,6 @@ const Todo = () => {
     try {
       const response = await axiosInstance.put(`/todo/${modalId}`, formData);
       console.log(response.data);
-      const newData = response.data.todo;
       setTodos((prev) => {
         return prev.map((todo) =>
           todo._id === modalId ? { ...todo, content: modalContent } : todo
@@ -187,7 +189,7 @@ const Todo = () => {
     }
     setModalId("");
     setModalContent("");
-  });
+  }, [modalContent, modalId, todos]);
 
   const patch = useCallback(async () => {
     try {
@@ -201,13 +203,14 @@ const Todo = () => {
     } catch (e) {
       if (e.request.statusText === "Unauthorized") {
         alert("권한이 없습니다 재로그인 해주세요");
-        window.location.replace("/login");
+        navigate("/Login");
+        return false;
       }
       console.log("오류남" + e);
     } finally {
       setIsLoading(false);
     }
-  }, [page, setPage, setTodos]);
+  }, [navigate, page]);
 
   useEffect(() => {
     (async () => {
