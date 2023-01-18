@@ -5,7 +5,7 @@ import axiosInstance from "../../apis/axiosInstance";
 import ModalTodo from "../../components/Modal/ModalTodo";
 import TodoInput from "../../components/TodoInput";
 import TodoList from "../../components/TodoList";
-import { TodoTitle, TodoWrapper } from "./Todo.styled";
+import { TodoDiv, TodoTitle, TodoWrapper } from "./Todo.styled";
 
 const Todo = () => {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ const Todo = () => {
     });
   }, []);
 
-  //완료 여부 (체크박스)
+  //완료 여부 (체크박스) Modal
   const handleCheck = useCallback(
     async (id, isCompleted) => {
       try {
@@ -126,16 +126,16 @@ const Todo = () => {
   }, []);
   return (
     <TodoWrapper>
-      <TodoTitle>
-        <h1>Todo</h1>
-      </TodoTitle>
-      <TodoInput handleAddTodo={handleAddTodo} />
-      <TodoList
-        todos={todos}
-        handleTodos={handleTodos}
-        handleDeleteTodo={handleDeleteTodo}
-        openTodoMoal={openTodoMoal}
-      />
+      <TodoTitle>Todo</TodoTitle>
+      <TodoDiv>
+        <TodoInput handleAddTodo={handleAddTodo} />
+        <TodoList
+          todos={todos}
+          handleTodos={handleTodos}
+          handleDeleteTodo={handleDeleteTodo}
+          openTodoMoal={openTodoMoal}
+        />
+      </TodoDiv>
       <Modal isOpen={todo === null ? false : true}>
         {todo === null ? (
           false
