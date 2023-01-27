@@ -51,8 +51,8 @@ const initialState = {
 // Toolkit Reducer
 export default createReducer(initialState, {
   [SEARCH_DATA]: (state, { payload: data }) => {
-    state.todos = data.todos;
-    // state.todos = state.todos.concat(data.todos);
+    // state.todos = data.todos;
+    state.todos = state.todos.concat(data.todos);
     state.success = data.success;
   },
 });

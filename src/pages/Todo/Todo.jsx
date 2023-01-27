@@ -29,7 +29,6 @@ const Todo = () => {
   const onSearchButtonClick = useCallback(
     (page) => {
       dispatch(searchDataAsync(page));
-      console.log(retodos);
       if (retodos.length === 0) {
         alert("마지막페이지입니다");
       } else {
@@ -91,6 +90,7 @@ const Todo = () => {
       // const respons = await axiosInstance.get(`/todo?page=${page}`);
       // const { paging, todos: prevTodos } = respons.data;
       onSearchButtonClick(page);
+
       // setTodos((prev) => {
       //   return prev.concat(retodos);
       // });
@@ -170,7 +170,7 @@ const Todo = () => {
           onSaveButtonClick={onSaveButtonClick}
         />
         <TodoList
-          todos={todos}
+          todos={retodos}
           modifySaga={modifySaga}
           handleTodos={handleTodos}
           handleDeleteTodo={handleDeleteTodo}
