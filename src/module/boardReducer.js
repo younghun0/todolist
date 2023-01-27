@@ -5,16 +5,19 @@ import { createAction, createReducer } from "@reduxjs/toolkit";
 const SEARCH_DATA_ASYNC = "SEARCH_DATA_ASYNC";
 const SEARCH_DATA = "SEARCH_DATA";
 const SAVE_DATA_ASYNC = "SAVE_DATA_ASYNC";
+const MODIFY_DATA_ASYNC = "MODIFY_DATA_ASYNC";
 const REMOVE_DATA_ASYNC = "REMOCE_DATA_ASYNC";
 
 export const searchDataAsync = createAction(SEARCH_DATA_ASYNC);
 export const searchData = createAction(SEARCH_DATA);
 export const saveDataAsync = createAction(SAVE_DATA_ASYNC);
+export const modifyDataAsync = createAction(MODIFY_DATA_ASYNC);
 export const removeDataAsync = createAction(REMOVE_DATA_ASYNC);
 
 export function* boardSaga() {
   yield takeEvery(SEARCH_DATA_ASYNC, searchDataSaga);
   yield takeEvery(SAVE_DATA_ASYNC, saveDataSaga);
+  yield takeEvery(MODIFY_DATA_ASYNC, modifyDataSaga);
   yield takeEvery(REMOVE_DATA_ASYNC, removeDataSaga);
 }
 
@@ -23,13 +26,18 @@ export function* searchDataSaga({ payload: page }) {
   yield put(searchData(response));
 }
 
-// Save Saga
+// input
 export function* saveDataSaga({ payload }) {
   const response = yield call(API.saveData, payload);
-  return response;
+  yield response;
+}
+export function* modifyDataSaga({ payload }) {
+  console.log(payload);
+  const response = yield call(API.modifyData, payload);
+  yield response;
 }
 
-// Remove Saga
+// Remove
 export function* removeDataSaga({ payload }) {
   const response = yield call(API.removeData, payload.id);
 }

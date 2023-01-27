@@ -16,6 +16,14 @@ export async function saveData(saveData) {
   const response = await axiosInstance.post(inserUrl, formData);
   return response;
 }
+export async function modifyData(Data) {
+  const formData = new FormData();
+  formData.append("title", Data.title);
+  formData.append("isCompleted", false);
+  const inserUrl = "/todo/" + Data._id;
+  const response = await axiosInstance.put(inserUrl, formData);
+  return response;
+}
 export async function removeData(id) {
   const removeUrl = "/todo/" + id;
   const response = await axiosInstance.delete(removeUrl);

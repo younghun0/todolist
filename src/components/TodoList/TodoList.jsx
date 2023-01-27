@@ -3,7 +3,13 @@ import axiosInstance from "../../apis/axiosInstance";
 import TodoItem from "../TodoItem";
 import { TodoListWrapper } from "./TodoList.styled";
 
-const TodoList = ({ todos, handleTodos, handleDeleteTodo, openTodoMoal }) => {
+const TodoList = ({
+  todos,
+  modifySaga,
+  handleTodos,
+  handleDeleteTodo,
+  openTodoMoal,
+}) => {
   //완료 여부 (체크박스)
   const handleCheck = useCallback(
     async (id, isCompleted) => {
@@ -37,22 +43,11 @@ const TodoList = ({ todos, handleTodos, handleDeleteTodo, openTodoMoal }) => {
   const handleUpdate = useCallback(
     async (_id, keyCode, todo) => {
       if (keyCode === 13) {
-        const formData = new FormData();
-        formData.append("title", todo.title);
-        formData.append("isCompleted", todo.isCompleted);
-        try {
-          const {
-            data: { success, todo },
-          } = await axiosInstance.put(`/todo/${_id}`, formData);
-          if (success) {
-            handleTodos(_id, todo);
-          }
-        } catch (e) {
-          console.log(e);
-        }
+        modifySaga(todo);
+        handleTodos(_id, todo);
       }
     },
-    [handleTodos]
+    [handleTodos, modifySaga]
   );
   //삭제 (x박스)
   const handleDelete = useCallback(async (_id) => {

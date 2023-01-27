@@ -6,7 +6,11 @@ import axiosInstance from "../../apis/axiosInstance";
 import ModalTodo from "../../components/Modal/ModalTodo";
 import TodoInput from "../../components/TodoInput";
 import TodoList from "../../components/TodoList";
-import { saveDataAsync, searchDataAsync } from "../../module/boardReducer";
+import {
+  modifyDataAsync,
+  saveDataAsync,
+  searchDataAsync,
+} from "../../module/boardReducer";
 import { TodoDiv, TodoTitle, TodoWrapper } from "./Todo.styled";
 
 const Todo = () => {
@@ -37,6 +41,9 @@ const Todo = () => {
     },
     [dispatch, retodos]
   );
+  const modifySaga = (data, id) => {
+    dispatch(modifyDataAsync(data, id));
+  };
   const onSaveButtonClick = (data) => {
     dispatch(saveDataAsync(data));
   };
@@ -164,6 +171,7 @@ const Todo = () => {
         />
         <TodoList
           todos={todos}
+          modifySaga={modifySaga}
           handleTodos={handleTodos}
           handleDeleteTodo={handleDeleteTodo}
           openTodoMoal={openTodoMoal}
