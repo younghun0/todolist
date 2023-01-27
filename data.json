@@ -1,0 +1,40 @@
+{
+  "data": [
+    {
+      "id": 2,
+      "boardId": 2,
+      "boardTitle": "Title 2",
+      "boardContend": "Content 2"
+    },
+    {
+      "id": 3,
+      "boardId": 3,
+      "boardTitle": "sdf",
+      "boardContent": "sdf"
+    },
+    {
+      "id": 4,
+      "boardId": 4,
+      "boardTitle": "ss",
+      "boardContent": "ss"
+    },
+    {
+      "id": 5,
+      "boardId": 5,
+      "boardTitle": "ewfw",
+      "boardContent": "wef"
+    },
+    {
+      "id": 6,
+      "boardId": 6,
+      "boardTitle": "123",
+      "boardContent": "123"
+    },
+    {
+      "id": 7,
+      "boardId": null,
+      "boardTitle": "we",
+      "boardContent": "w"
+    }
+  ]
+}

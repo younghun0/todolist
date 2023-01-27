@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import Modal from "react-modal";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import axiosInstance from "../../apis/axiosInstance";
 import ModalTodo from "../../components/Modal/ModalTodo";
 import TodoInput from "../../components/TodoInput";
 import TodoList from "../../components/TodoList";
+import { saveDataAsync, searchDataAsync } from "../../module/boardReducer";
 import { TodoDiv, TodoTitle, TodoWrapper } from "./Todo.styled";
 
 const Todo = () => {
@@ -14,6 +16,30 @@ const Todo = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [todo, setTodo] = useState(null);
 
+  const dispatch = useDispatch();
+
+  const { todos: retodos, success } = useSelector(
+    (state) => state.boardReducer
+  );
+
+  const onSearchButtonClick = useCallback(
+    (page) => {
+      dispatch(searchDataAsync(page));
+      console.log(retodos);
+      if (retodos.length === 0) {
+        alert("마지막페이지입니다");
+      } else {
+        setPage(page + 1);
+      }
+      setTodos((prev) => {
+        return prev.concat(retodos);
+      });
+    },
+    [dispatch, retodos]
+  );
+  const onSaveButtonClick = (data) => {
+    dispatch(saveDataAsync(data));
+  };
   const handleAddTodo = useCallback((nextTodo) => {
     setTodos((prev) => [nextTodo, ...prev]);
   }, []);
@@ -55,12 +81,12 @@ const Todo = () => {
   const patch = useCallback(async () => {
     try {
       setIsLoading(true);
-      const respons = await axiosInstance.get(`/todo?page=${page}`);
-      const { paging, todos: prevTodos } = respons.data;
-      setTodos((prev) => {
-        return prev.concat(prevTodos);
-      });
-      setPage(page + 1);
+      // const respons = await axiosInstance.get(`/todo?page=${page}`);
+      // const { paging, todos: prevTodos } = respons.data;
+      onSearchButtonClick(page);
+      // setTodos((prev) => {
+      //   return prev.concat(retodos);
+      // });
     } catch (e) {
       if (e.request.statusText === "Unauthorized") {
         alert("권한이 없습니다 재로그인 해주세요");
@@ -71,11 +97,12 @@ const Todo = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [navigate, page]);
+  }, [navigate, onSearchButtonClick, page]);
 
   useEffect(() => {
     (async () => {
       await patch();
+      setTodos(retodos);
     })();
   }, []);
   const handleModalTitle = useCallback(
@@ -126,9 +153,15 @@ const Todo = () => {
   }, []);
   return (
     <TodoWrapper>
+      <h1>{success ? "불러옴" : "안불러옴"}</h1>
+      <button onClick={() => onSearchButtonClick(page)}>누름</button>
+
       <TodoTitle>Todo</TodoTitle>
       <TodoDiv>
-        <TodoInput handleAddTodo={handleAddTodo} />
+        <TodoInput
+          handleAddTodo={handleAddTodo}
+          onSaveButtonClick={onSaveButtonClick}
+        />
         <TodoList
           todos={todos}
           handleTodos={handleTodos}
